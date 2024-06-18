@@ -66,6 +66,7 @@
                 </configuration>
             </plugin>
         </plugins>
+        <finalName>devops-project-webapp</finalName>
     </build>
 
 </project>
