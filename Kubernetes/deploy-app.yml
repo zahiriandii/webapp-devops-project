@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: webapp-deploy
+spec:
+  replicas: 5
+  selector:
+      matchLabels:
+        app: webapp-deploy
+  revisionHistoryLimit: 3
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 2
+      maxSurge: 2
+  template:
+      metadata:
+        labels:
+          app: webapp-deploy
+      spec:
+        containers:
+        - name: deploy-app-ctr
+          image: zahiriandii/devops-project:latest
+          env:
+              - name: SPRING_DATASOURCE_PASSWORD
+                value: "12345678"
+              - name: SPRING_DATASOURCE_URL
+                value: jdbc:postgresql://postgresdb:5432/postgres
+              - name: SPRING_DATASOURCE_USERNAME
+                value: postgres
+              - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+                value: update
+          ports:
+          - containerPort: 5433
