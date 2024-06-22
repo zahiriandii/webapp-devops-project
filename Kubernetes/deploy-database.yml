@@ -3,11 +3,10 @@ kind: Deployment
 metadata:
   name: postgresdb
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: postgresdb
-  minReadySeconds: 20
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -22,11 +21,22 @@ spec:
       - name: db-ctr
         image: postgres
         env:
-          - name: POSTGRES_DB
-            value: postgres
-          - name: POSTGRES_USER
-            value: postgres
-          - name: POSTGRES_PASSWORD
-            value: "12345678"
+          - name: 'POSTGRES_USER'
+            value: 'postgres'
+          - name: 'POSTGRES_PASSWORD'
+            value: '12345678'
         ports:
-        - containerPort: 5433
+        - containerPort: 5432 #container port should be the same as postgres port on local machine (mine is 5432)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres-svc
+spec:
+  selector:
+    app: postgresdb
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+

@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: webapp-deploy
 spec:
-  replicas: 5
+  replicas: 2
   selector:
       matchLabels:
         app: webapp-deploy
@@ -18,18 +18,34 @@ spec:
       metadata:
         labels:
           app: webapp-deploy
+          env: web-project
       spec:
         containers:
         - name: deploy-app-ctr
-          image: zahiriandii/devops-project:latest
+          image: zahiriandii/devops-project:v3
+          resources:
+            requests:
+              memory: "1Gi"
           env:
-              - name: SPRING_DATASOURCE_PASSWORD
-                value: "12345678"
-              - name: SPRING_DATASOURCE_URL
-                value: jdbc:postgresql://postgresdb:5432/postgres
-              - name: SPRING_DATASOURCE_USERNAME
-                value: postgres
-              - name: SPRING_JPA_HIBERNATE_DDL_AUTO
-                value: update
+              - name: 'SPRING_DATASOURCE_PASSWORD'
+                value: '12345678'
+              - name: 'SPRING_DATASOURCE_URL'
+                value: 'jdbc:postgresql://postgres-svc:5432/postgres' # //the-database-service-name:5432/postgres
+              - name: 'SPRING_DATASOURCE_USERNAME'
+                value: 'postgres'
+              - name: 'SPRING_JPA_HIBERNATE_DDL_AUTO'
+                value: 'update'
           ports:
-          - containerPort: 5433
+          - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc-web-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8081
+  selector:
+    env: web-project
