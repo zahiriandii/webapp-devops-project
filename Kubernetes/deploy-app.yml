@@ -1,6 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: prod
   name: webapp-deploy
 spec:
   replicas: 2
@@ -26,13 +27,20 @@ spec:
           resources:
             requests:
               memory: "1Gi"
+          envFrom:
+            - configMapRef:
+                name: database-config
           env:
               - name: 'SPRING_DATASOURCE_PASSWORD'
-                value: '12345678'
-              - name: 'SPRING_DATASOURCE_URL'
-                value: 'jdbc:postgresql://postgres-svc:5432/postgres' # //the-database-service-name:5432/postgres
+                valueFrom:
+                  secretKeyRef:
+                    name: database-secret
+                    key: password
               - name: 'SPRING_DATASOURCE_USERNAME'
-                value: 'postgres'
+                valueFrom:
+                  secretKeyRef:
+                    key: username
+                    name: database-secret
               - name: 'SPRING_JPA_HIBERNATE_DDL_AUTO'
                 value: 'update'
           ports:
@@ -41,6 +49,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  namespace: prod
   name: svc-web-app
 spec:
   type: ClusterIP
