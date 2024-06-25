@@ -11,6 +11,21 @@ jobs:
 
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_USER: ${{ secrets.DB_USER }}
+          POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
     - uses: actions/checkout@v4
     - name: Set up JDK 17
@@ -19,19 +34,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Set up PostgreSQL
-      uses: docker://postgres:latest
-      env:
-        POSTGRES_USER: ${{ secrets.DB_USER }}
-        POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
-        POSTGRES_DB: postgres
-      with:
-        args: >
-          -p 5432:5432
     - name: Wait for PostgreSQL to start
       run: |
         timeout=60
-        until docker exec postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -c "select 1" || [ $timeout -eq 0 ]; do
+        until nc -z localhost 5432 || [ $timeout -eq 0 ]; do
           echo "Waiting for PostgreSQL to start..."
           sleep 5
           timeout=$(($timeout - 5))
