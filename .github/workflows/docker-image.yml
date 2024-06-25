@@ -17,10 +17,10 @@ jobs:
       uses: docker/login-action@v1
       with:
         username: ${{ secrets.DOCKERHUB-USERNAME }}
-        password: ${{ secrets.DOCKERHUB-PASSWORD }}
+        password: ${{ secrets.DOCKERHUB-TOKEN }}
     - uses: actions/checkout@v4
     - name: Build the Docker image
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v3
       with:
         context: .
         push: true
