@@ -1,4 +1,4 @@
-name: Java CI with Maven
+name: Java CI with Maven and PostgreSQL
 
 on:
   push:
@@ -19,8 +19,29 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
+    - name: Set up PostgreSQL
+      uses: docker://postgres:latest
+      env:
+        POSTGRES_USER: ${{ secrets.DB_USER }}
+        POSTGRES_PASSWORD: ${{ secrets.DB_PASSWORD }}
+        POSTGRES_DB: postgres
+      with:
+        args: >
+          -p 5432:5432
+    - name: Wait for PostgreSQL to start
+      run: |
+        timeout=60
+        until docker exec postgres psql -U $POSTGRES_USER -d $POSTGRES_DB -c "select 1" || [ $timeout -eq 0 ]; do
+          echo "Waiting for PostgreSQL to start..."
+          sleep 5
+          timeout=$(($timeout - 5))
+        done
     - name: Build with Maven
       run: mvn clean install
+      env:
+        DATABASE_URL: jdbc:postgresql://localhost:5432/postgres
+        DATABASE_USERNAME: ${{ secrets.DB_USER }}
+        DATABASE_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
   docker:
     runs-on: ubuntu-latest
@@ -42,5 +63,3 @@ jobs:
           context: .
           push: true
           tags: zahiriandii/devops-lab8:latest
-
-   
