@@ -23,4 +23,4 @@ jobs:
       with:
         context: .
         push: true
-        tags: zahiriandii/devops-project:latest 
+        tags: zahiriandii/devops-project:latest
