@@ -41,6 +41,6 @@ jobs:
         with:
           context: .
           push: true
-          tags: zahiriandii/devops-lab8:v2
+          tags: zahiriandii/devops-lab8:latest
 
    
