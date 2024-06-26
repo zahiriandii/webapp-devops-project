@@ -1,7 +1,7 @@
 FROM openjdk:17-jdk-slim
 LABEL authors="Andi-Zahiri-191560"
 
-WORKDIR /app
+VOLUME /tmp
 COPY target/devops-project-webapp.jar app.jar
 
 EXPOSE 8081
