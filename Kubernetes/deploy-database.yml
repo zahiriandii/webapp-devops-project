@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: prod
+  name: postgresdb
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgresdb
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: postgresdb
+    spec:
+      containers:
+      - name: db-ctr
+        image: postgres
+        env:
+          - name: 'POSTGRES_USER'
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: database-secret
+          - name: 'POSTGRES_PASSWORD'
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: database-secret
+        ports:
+        - containerPort: 5432 #container port should be the same as postgres port on local machine (mine is 5432)
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: prod
+  name: postgres-svc
+spec:
+  selector:
+    app: postgresdb
+  ports:
+    - protocol: TCP
+      port: 5432
+      targetPort: 5432
+

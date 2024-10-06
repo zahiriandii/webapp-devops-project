@@ -1,0 +1,102 @@
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+    name: mcu-all
+    namespace: prod
+spec:
+  stripPrefix:
+    forceSlash: false
+    prefixes:
+      - /
+      - /products
+      - /logIn
+      - /logOut
+      - /shopping-cart
+      - /register
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: mcu-all
+  namespace: prod
+  annotations:
+    nginx.ingress.kubernetes.io/ssl-redirect: "false"
+    traefik.ingress.kubernetes.io/router.middlewares: prod-mcu-all@kubernetescrd
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /products
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+      - path: /logIn
+        pathType: Prefix
+        backend:
+            service:
+              name: svc-web-app
+              port:
+                number: 80
+      - path: /logOut
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+      - path: /register
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+      - path: /shopping-cart
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+
+  - host: project.191560.devops.com
+    http:
+      paths:
+      - path: /products
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+      - path: /logIn
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+      - path: /logOut
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+      - path: /shopping-cart
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80
+      - path: /register
+        pathType: Prefix
+        backend:
+          service:
+            name: svc-web-app
+            port:
+              number: 80

@@ -1,0 +1,4 @@
+ mvn clean install
+docker build -t="zahiriandii/devops-project" .
+docker run --name postgres-container -p 8888:5432 -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=12345678 -e POSTGRES_DB=postgres -d postgres
+docker run --name webapptest -p 8082:8081 -d zahiriandii/devops-project

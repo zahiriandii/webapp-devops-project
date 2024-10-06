@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: prod
+  name: webapp-deploy
+spec:
+  replicas: 2
+  selector:
+      matchLabels:
+        app: webapp-deploy
+  revisionHistoryLimit: 3
+  minReadySeconds: 15
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 2
+      maxSurge: 2
+  template:
+      metadata:
+        labels:
+          app: webapp-deploy
+          env: web-project
+      spec:
+        containers:
+        - name: deploy-app-ctr
+          image: zahiriandii/devops-project:v3
+          resources:
+            requests:
+              memory: "1Gi"
+          envFrom:
+            - configMapRef:
+                name: database-config
+          env:
+              - name: 'SPRING_DATASOURCE_PASSWORD'
+                valueFrom:
+                  secretKeyRef:
+                    name: database-secret
+                    key: password
+              - name: 'SPRING_DATASOURCE_USERNAME'
+                valueFrom:
+                  secretKeyRef:
+                    key: username
+                    name: database-secret
+              - name: 'SPRING_JPA_HIBERNATE_DDL_AUTO'
+                value: 'update'
+          ports:
+          - containerPort: 8081
+---
+apiVersion: v1
+kind: Service
+metadata:
+  namespace: prod
+  name: svc-web-app
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: 8081
+  selector:
+    env: web-project
