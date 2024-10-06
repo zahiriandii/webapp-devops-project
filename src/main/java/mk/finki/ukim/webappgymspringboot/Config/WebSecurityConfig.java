@@ -80,5 +80,6 @@ public class WebSecurityConfig {
         AuthenticationManagerBuilder authenticationManagerBuilder = http.getSharedObject(AuthenticationManagerBuilder.class);
         authenticationManagerBuilder.authenticationProvider(provider);
         return authenticationManagerBuilder.build();
+
     }
 }

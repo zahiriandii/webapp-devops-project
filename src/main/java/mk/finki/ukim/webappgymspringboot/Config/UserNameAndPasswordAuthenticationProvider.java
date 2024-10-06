@@ -40,4 +40,5 @@ public class UserNameAndPasswordAuthenticationProvider implements Authentication
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
+
 }

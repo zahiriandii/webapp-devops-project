@@ -11,6 +11,5 @@ public interface UserService extends UserDetailsService {
 
     List<User> getAllUsers();
     Optional<User> saveUser(String username, String name, String surname, String password);
-
 }
 
