@@ -1,5 +1,7 @@
 package mk.finki.ukim.webappgymspringboot.Service.Implementation;
 
+
+import mk.finki.ukim.webappgymspringboot.Model.Exceptions.UserNotFoundException;
 import mk.finki.ukim.webappgymspringboot.Model.User;
 import mk.finki.ukim.webappgymspringboot.Repository.UserRepository;
 import mk.finki.ukim.webappgymspringboot.Service.UserService;
@@ -31,5 +33,10 @@ public class UserServiceImpl implements UserService {
     public Optional<User> saveUser(String username, String name, String surname, String password) {
         User user = new User(username,name,surname,password);
         return Optional.of(userRepository.save(user));
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return (UserDetails) this.userRepository.findByUsername(username).orElseThrow(()->new UsernameNotFoundException(username));
     }
 }
